@@ -13,10 +13,25 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
     @IBOutlet weak var collectionView: UICollectionView!
     var people = [Person]()
 
+    func save() {
+        let savedData = NSKeyedArchiver.archivedDataWithRootObject(people)
+        let defaults = NSUserDefaults.standardUserDefaults()
+        defaults.setObject(savedData, forKey: "people")
+    }
+    
+    func load() {
+        let defaults = NSUserDefaults.standardUserDefaults()
+        if let savedPeople = defaults.objectForKey("people") as? NSData {
+            people = NSKeyedUnarchiver.unarchiveObjectWithData(savedPeople) as! [Person]
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: "addNewPerson")
+        
+        self.load()
     }
     
     func addNewPerson() {
@@ -51,6 +66,8 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         people.append(person)
         self.collectionView.reloadData()
         
+        self.save()
+        
         dismissViewControllerAnimated(true, completion: nil)
     }
     
@@ -68,6 +85,8 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
             person.name = newName.text!
             
             self.collectionView.reloadData()
+            
+            self.save()
         })
         
         presentViewController(ac, animated: true, completion: nil)
