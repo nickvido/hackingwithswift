@@ -101,12 +101,26 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         
         applyProcessing()
     }
-
+    
     @IBAction func save(sender: AnyObject) {
+        UIImageWriteToSavedPhotosAlbum(imageView.image!, self, "image:didFinishSavingWithError:contextInfo:", nil)
     }
 
     @IBAction func intensityChanged(sender: AnyObject) {
         applyProcessing()
+    }
+    
+    func image(image: UIImage, didFinishSavingWithError error: NSError?, contextInfo:UnsafePointer<Void>) {
+        if error == nil {
+            let ac = UIAlertController(title: "Saved!", message: nil, preferredStyle: .Alert)
+            ac.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+            presentViewController(ac, animated: true, completion: nil)
+        }
+        else {
+            let ac = UIAlertController(title: "Save error", message: error?.localizedDescription, preferredStyle: .Alert)
+            ac.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+            presentViewController(ac, animated: true, completion: nil)
+        }
     }
 }
 
